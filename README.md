@@ -17,6 +17,14 @@ El objetivo es reducir el ausentismo, optimizar la agenda de los médicos y ofre
 
 ---
 
+## 📚 Documentación Técnica
+
+Para mantener este documento limpio, los detalles técnicos profundos, diagramas UML y modelos de base de datos se encuentran en nuestra carpeta de documentación.
+
+* 📂 **[Ir a la Documentación Técnica](./docs)**
+
+---
+
 ## 🚀 Demo en Vivo
 
 La aplicación se encuentra desplegada y operativa en una arquitectura Serverless. No es necesaria ninguna instalación local para probarla.
