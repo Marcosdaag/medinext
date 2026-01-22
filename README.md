@@ -38,7 +38,7 @@ La aplicación se encuentra desplegada y operativa. No es necesaria ninguna inst
 
 ## 👥 Roles y Funcionalidades
 
-El sistema implementa una lógica de negocio basada en roles jerárquicos:
+El sistema implementa una lógica de negocio basada en roles jerárquicos: RBAC (Role-Based Access Control o Control de Acceso Basado en Roles)
 
 ### 1. 🏢 Super Admin (Gestión Hospitalaria)
 * **Administración Global:** Control total para dar de alta/baja médicos, pacientes y turnos.
