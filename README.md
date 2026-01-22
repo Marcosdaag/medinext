@@ -13,13 +13,11 @@
 
 **Medinext** es una plataforma SaaS (*Software as a Service*) diseñada para modernizar la gestión de turnos en hospitales y clínicas. El sistema centraliza la administración de personal médico, pacientes y citas, garantizando una experiencia fluida y libre de conflictos gracias a su manejo avanzado de concurrencia.
 
-El objetivo es reducir el ausentismo, optimizar la agenda de los médicos y ofrecer a los pacientes una forma rápida y segura de gestionar su salud, integrando tecnologías modernas como **Inteligencia Artificial** y **Pagos Digitales**.
-
 ---
 
 ## 📚 Documentación Técnica
 
-Para mantener este documento limpio, los detalles técnicos profundos, diagramas UML y modelos de base de datos se encuentran en nuestra carpeta de documentación.
+Para mantener este documento limpio, los detalles técnicos profundos, diagramas UML y modelos de base de datos se encuentran en la carpeta de documentación.
 
 * 📂 **[Ir a la Documentación Técnica](./docs)**
 
@@ -27,14 +25,14 @@ Para mantener este documento limpio, los detalles técnicos profundos, diagramas
 
 ## 🚀 Demo en Vivo
 
-La aplicación se encuentra desplegada y operativa en una arquitectura Serverless. No es necesaria ninguna instalación local para probarla.
+La aplicación se encuentra desplegada y operativa. No es necesaria ninguna instalación local para probarla.
 
 🔗 **[Ver Medinext en Vivo Aquí](https://medinext-demo.vercel.app)**
 
 > **Credenciales de prueba sugeridas:**
-> * **Admin:** `admin` / `1234`
-> * **Médico:** `doctor` / `1234`
-> * **Paciente:** `user` / `1234`
+> * 🏢 **Admin:** `admin` / `1234`
+> * 👨‍⚕️ **Médico:** `doctor` / `1234`
+> * 👤 **Paciente:** `user` / `1234`
 
 ---
 
@@ -64,54 +62,50 @@ El sistema implementa una lógica de negocio basada en roles jerárquicos:
 
 Este proyecto se distingue por implementar prácticas avanzadas de ingeniería de software:
 
-* **🏗️ Arquitectura en Capas (Layered):** Siguiendo los estándares de **NestJS**, el código está desacoplado en Controladores, Servicios y Módulos, facilitando la escalabilidad y el mantenimiento.
-* **⚡ Control de Concurrencia:** Algoritmos diseñados para manejar múltiples solicitudes simultáneas, asegurando la integridad de datos en la reserva de turnos (evitando *double-booking*).
-* **🔒 Seguridad Robusta:**
-    * Autenticación vía **JWT** (JSON Web Tokens).
-    * Estrategias de **Passport.js** para validación de identidad.
+* 🏗️ **Arquitectura en Capas (Layered):** Siguiendo los estándares de **NestJS**, el código está desacoplado en Controladores, Servicios y Módulos, facilitando la escalabilidad.
+* ⚡ **Control de Concurrencia:** Algoritmos diseñados para manejar múltiples solicitudes simultáneas, asegurando la integridad de datos (evitando *double-booking*).
+* 🔒 **Seguridad Robusta:**
+    * Autenticación vía **JWT** y estrategias de **Passport.js**.
     * **Guards** personalizados para protección de rutas según roles.
-* **💳 Pagos Integrados:** Procesamiento seguro de pagos y copagos mediante la API de **Stripe**.
-* **💾 ORM Moderno:** Uso de **Prisma** para un modelado de datos estricto y type-safe sobre PostgreSQL.
+* 💳 **Pagos Integrados:** Procesamiento seguro de pagos y copagos mediante la API de **Stripe**.
+* 💾 **ORM Moderno:** Uso de **Prisma** para un modelado de datos estricto y type-safe sobre PostgreSQL.
 
 ---
 
-## 🧪 Calidad de Código y Documentación
+## 🧪 Calidad de Código
 
-Para garantizar la fiabilidad y comprensibilidad del sistema, se han integrado las siguientes herramientas de desarrollo:
+Para garantizar la fiabilidad del sistema, se han integrado las siguientes herramientas:
 
 ### 📘 Documentación de API (Swagger)
-El backend cuenta con documentación autogenerada bajo el estándar **OpenAPI**. Esto permite a los desarrolladores frontend y QA visualizar los esquemas de datos y probar los endpoints en tiempo real.
-* **Acceso:** Disponible en la ruta `/api/docs` de la aplicación desplegada.
+Documentación autogenerada bajo el estándar **OpenAPI**. Permite a los desarrolladores visualizar y probar los endpoints en tiempo real.
 
-### 🧪 Testing Automatizado (Jest)
-La estabilidad del sistema se valida mediante pruebas automatizadas utilizando **Jest**:
-* **Unit Testing:** Cobertura de lógica de negocio crítica en los Servicios (especialmente validaciones de turnos y cálculo de horarios).
-* **Integration Testing:** Verificación de la comunicación correcta entre los módulos y la base de datos.
+### 🚦 Testing Automatizado (Jest)
+La estabilidad del sistema se valida mediante pruebas automatizadas:
+* **Unit Testing:** Cobertura de lógica de negocio crítica en los Servicios.
+* **Integration Testing:** Verificación de la comunicación entre módulos y base de datos.
 
 ---
 
 ## 🛠️ Stack Tecnológico
 
-**Frontend (SPA)**
-* **Framework:** Angular (Latest)
+**🖥️ Frontend (SPA)**
+* **Framework:** Angular
 * **Estilos:** Tailwind CSS
-* **Gestión de Estado/Http:** RxJS
+* **Http/State:** RxJS
 * **Hosting:** Vercel
 
-**Backend (API REST)**
+**⚙️ Backend (API REST)**
 * **Framework:** NestJS
 * **Lenguaje:** TypeScript
-* **Validaciones:** Class-validator / Class-transformer
-* **Documentación:** Swagger (OpenAPI)
-* **Testing:** Jest
-* **Hosting:** Vercel (Serverless Functions)
+* **Docs:** Swagger
+* **Hosting:** Vercel
 
-**Infraestructura y Datos**
-* **Base de Datos:** PostgreSQL
-* **Cloud Provider:** Supabase
-* **Storage:** Supabase Storage (imágenes/docs)
+**🗄️ Infraestructura y Datos**
+* **DB:** PostgreSQL
+* **Cloud:** Supabase
+* **Storage:** Supabase Storage
 
-**Servicios Externos**
+**🧩 Servicios Externos**
 * **Auth:** Google OAuth
 * **Pagos:** Stripe API
 * **IA:** OpenAI API
