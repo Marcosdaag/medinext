@@ -11,5 +11,5 @@ export default defineConfig({
   datasource: {
     url: process.env["DATABASE_URL"],
     directUrl: process.env["DIRECT_URL"],
-  } as any,
+  } as any, // Esto es para poder pasarle la directUrl ya que no es un tipo especificado en datasource
 });
