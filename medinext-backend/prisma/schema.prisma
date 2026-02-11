@@ -1,0 +1,113 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+/**
+ * @unique significa que esa propiedad no puede repetirse y es unico para el usuario
+ * @default define que valor va a tomar por defecto la propiedad
+ * ? aclara que esa propiedad es opcional para crear un objeto en la base de datos
+ */
+
+// Modulo de usuarios
+enum Role {
+  SUPERADMIN
+  DOCTOR
+  USER
+}
+
+model User {
+  id             String  @id @default(uuid())
+  email          String  @unique
+  hashedPassword String
+  fullName       String
+  dni            String  @unique
+  avatarUrl      String?
+  timeZone       String  @default("UTC") // Importante para manejar turnos internacionales
+  roles          Role[]  @default([USER])
+
+  // Relaciones
+  doctorProfile DoctorProfile? // Relación 1:1 (Puede no ser doctor)
+  appointments  Appointment[] // Sus turnos como Paciente
+
+  // Auditoría
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Modulo de gestion de doctores
+model DoctorProfile {
+  id            String  @id @default(uuid())
+  specialty     String
+  visitDuration Int     @default(30)
+  visitPrice    Decimal @db.Decimal(10, 2)
+
+  // Relación 1:1 con User (Un usuario ES un doctor)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Agenda y Disponibilidad
+  availabilities Availability[] // Horarios fijos semanales
+  overrides      ScheduleOverride[] // Excepciones (vacaciones, feriados)
+
+  // Turnos que el doctor va a atender
+  appointments Appointment[]
+}
+
+model Availability {
+  id        String @id @default(uuid())
+  dayOfWeek Int
+  startTime String
+  endTime   String
+
+  // Relación
+  doctorId String
+  doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
+}
+
+model ScheduleOverride {
+  id        String   @id @default(uuid())
+  startDate DateTime // Fecha y hora de inicio del bloqueo
+  endDate   DateTime // Fecha y hora de fin
+  reason    String? // Ej: "Congreso Médico"
+
+  doctorId String
+  doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
+}
+
+// Modulo de turnos
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+model Appointment {
+  id        String            @id @default(uuid())
+  dateUTC   DateTime
+  status    AppointmentStatus @default(PENDING)
+  paymentId String?
+
+  // Paciente que solicita
+  patientId String
+  patient   User   @relation(fields: [patientId], references: [id])
+
+  // Doctor que atiende
+  doctorId String
+  doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

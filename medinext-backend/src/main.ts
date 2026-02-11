@@ -3,19 +3,20 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
+  //Se crea el modulo contenedor de toda la app
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
-
+  
   //Configuracion de swagger
   const config = new DocumentBuilder()
-    .setTitle('Medinext API')
-    .setDescription('Documentacion de la API de Medinext')
-    .setVersion('1.0')
-    .build()
-
+  .setTitle('Medinext API')
+  .setDescription('Documentacion de la API de Medinext')
+  .setVersion('1.0')
+  .build();
+  
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('doc', app, document);
+  SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  //Se levanta el servidor
+  await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
