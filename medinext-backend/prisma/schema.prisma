@@ -32,7 +32,7 @@ model User {
   email          String  @unique
   hashedPassword String
   fullName       String
-  dni            String  @unique
+  dni            String?  @unique
   avatarUrl      String?
   timeZone       String  @default("UTC") // Importante para manejar turnos internacionales
   roles          Role[]  @default([USER])
