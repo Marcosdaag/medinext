@@ -12,14 +12,14 @@ export class AuthService extends PrismaClient {
     super(); //inicializa Prisma
   }
 
-  // --- REGISTRO ---
+  //---Metodo-Funcion de registro---
   async register(registerDto: RegisterAuthDto) {
     const { email, password, fullName } = registerDto;
 
-    // 1. Encriptar contraseña
+    //Hasheo de password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // 2. Guardar en DB
+    //Guardar datos en la db
     const user = await this.user.create({
       data: {
         email,
@@ -35,11 +35,12 @@ export class AuthService extends PrismaClient {
     };
   }
 
-  // --- LOGIN ---
+
+  //---Metodo-Funcion de login---
   async login(loginDto: LoginAuthDto) {
     const { email, password } = loginDto;
 
-    // 1. Buscar usuario
+    //Busca usuario por email
     const user = await this.user.findUnique({
       where: { email },
     });
@@ -48,13 +49,13 @@ export class AuthService extends PrismaClient {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // 2. Verificar password
+    //Si se encuentra el email ingresado, verifica la password
     const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // 3. Generar Token
+    //En caso de cumplir todo lo anterior se loguea correctamente y genera un token
     const payload = { sub: user.id, email: user.email, roles: user.roles };
     return {
       access_token: this.jwtService.sign(payload),

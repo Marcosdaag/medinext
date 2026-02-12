@@ -9,14 +9,14 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // 1. Endpoint de Registro
+  //Endpoint de registro llamando al metodo register
   @Post('register')
   @ApiOperation({ summary: 'Registrar un nuevo usuario' })
   register(@Body() registerDto: RegisterAuthDto) {
     return this.authService.register(registerDto);
   }
 
-  // 2. Endpoint de Login
+  //Endpoint de login
   @Post('login')
   @ApiOperation({ summary: 'Iniciar sesión y obtener Token' })
   login(@Body() loginDto: LoginAuthDto) {
