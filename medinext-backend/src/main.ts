@@ -2,10 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   //Se crea el modulo contenedor de toda la app
   const app = await NestFactory.create(AppModule);
+
+  //---Aumento de limite de subida---
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
   
   //---Configuracion de swagger---
   const config = new DocumentBuilder()

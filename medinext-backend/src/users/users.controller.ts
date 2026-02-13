@@ -1,6 +1,7 @@
-import { Controller, Get, Body, Patch, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Body, Post, Patch, UseGuards, Request, UseInterceptors, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
@@ -32,4 +33,32 @@ export class UsersController {
   changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
     return this.usersService.changePassword(req.user.userId, changePasswordDto);
   }
+
+  //---Actualizar foto de perfil---
+  @Post('upload-avatar')
+  @ApiOperation({ summary: 'Subir o actualizar foto de perfil' })
+  @ApiConsumes('multipart/form-data') // Necesario para que Swagger muestre el botón de "Elegir archivo"
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: { type: 'string', format: 'binary' },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5242880 }), // Máximo 5MB
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }), // Solo imágenes
+        ],
+      }),
+    ) file: Express.Multer.File,
+  ) {
+    return this.usersService.uploadAvatar(req.user.userId, file);
+  }
+
 }
