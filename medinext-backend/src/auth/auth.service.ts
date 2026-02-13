@@ -61,4 +61,17 @@ export class AuthService extends PrismaClient {
       access_token: this.jwtService.sign(payload),
     };
   }
+
+  //---Metodo-Funcion de logout en todos los dispositivos---
+  async logout(userId: string) {
+    //Hago un update del token y tdos los actuales mueren
+    await this.user.update({
+      where: { id: userId },
+      data: {
+        tokenVersion: { increment: 1 }
+      }
+    });
+
+    return { message: 'Sesión cerrada correctamente en todos los dispositivos.' };
+  }
 }

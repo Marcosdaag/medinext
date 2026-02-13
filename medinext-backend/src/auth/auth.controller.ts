@@ -24,4 +24,13 @@ export class AuthController {
   login(@Body() loginDto: LoginAuthDto) {
     return this.authService.login(loginDto);
   }
+
+  //---Endpoint de logout general---
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  @ApiOperation({ summary: 'Cerrar sesión (Invalida tokens en todos los dispositivos)' })
+  logout(@Request() req) {
+    return this.authService.logout(req.user.userId);
+  }
 }
