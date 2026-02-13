@@ -1,7 +1,5 @@
 --Users:
-cambio de password dentro de la cuenta
 almacenamiento en el storage de las fotos de perfil
 pedir completar datos para acceder al menu tanto de usuario como doctor
-forzar a desloguear y volver a loguear al momento de que el token este expirado (en sotckapp no funciona)
 
 esta pensado para que una vez inicias la app y logueas, te muestra un menu de usuario o doctor

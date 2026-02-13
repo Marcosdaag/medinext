@@ -4,12 +4,12 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 export class LoginAuthDto {
     @ApiProperty({ example: 'juan.perez@medinext.com' })
     @IsEmail()
-    @IsNotEmpty()
+    @IsNotEmpty({ message: 'El email no puede estar vacia' })
     email: string;
 
     @ApiProperty({ example: 'Secret123' })
     @IsString()
-    @IsNotEmpty()
-    @MinLength(6)
+    @IsNotEmpty({ message: 'La contrraseña no puede estar vacia' })
+    @MinLength(6, { message: 'La contraseña debe tener al menos seis caracteres' })
     password: string;
 }

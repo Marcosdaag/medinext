@@ -44,6 +44,10 @@ model User {
   // Auditoría
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Auditoría y update
+  passwordChangedAt DateTime?
+  tokenVersion      Int       @default(0)
 }
 
 // Modulo de gestion de doctores

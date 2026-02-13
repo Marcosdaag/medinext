@@ -30,7 +30,7 @@ export class AuthService extends PrismaClient {
     });
 
     return {
-      message: 'Usuario registrado exitosamente',
+      message: 'Usuario registrado exitosamente.',
       user: { id: user.id, email: user.email }
     };
   }
@@ -46,17 +46,17 @@ export class AuthService extends PrismaClient {
     });
 
     if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Credenciales inválidas.');
     }
 
     //Si se encuentra el email ingresado, verifica la password
     const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Credenciales inválidas.');
     }
 
     //En caso de cumplir todo lo anterior se loguea correctamente y genera un token
-    const payload = { sub: user.id, email: user.email, roles: user.roles };
+    const payload = { sub: user.id, email: user.email, roles: user.roles, version: user.tokenVersion };
     return {
       access_token: this.jwtService.sign(payload),
     };

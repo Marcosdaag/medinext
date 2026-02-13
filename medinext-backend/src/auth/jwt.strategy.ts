@@ -2,9 +2,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
+
+  private prisma = new PrismaClient();
+
   constructor(configService: ConfigService) {
     super({
       //Extraer el token
@@ -16,6 +20,21 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   //Si el token es valido nest llama a la funcion automaticamente
   async validate(payload: any) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      select: { tokenVersion: true }
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('Usuario no encontrado.');
+    }
+
+    if (user.tokenVersion !== payload.version) {
+      throw new UnauthorizedException(
+        'La sesión ha expirado o la contraseña fue cambiada. Inicia sesión de nuevo.'
+      );
+    }
+
     return { userId: payload.sub, email: payload.email, roles: payload.roles };
   }
 }

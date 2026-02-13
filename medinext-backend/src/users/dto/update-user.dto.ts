@@ -9,7 +9,7 @@ export class UpdateUserDto {
     })
     @IsOptional()
     @IsString()
-    @MinLength(3)
+    @MinLength(3, { message: 'El nombre debe tener al menos tres caracteres' })
     fullName?: string;
 
     @ApiProperty({
