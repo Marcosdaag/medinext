@@ -1,0 +1,2 @@
+--Capacidad de editar users SUPERADMIN
+--Capacidad de ver info de pacientes DOCTOR
