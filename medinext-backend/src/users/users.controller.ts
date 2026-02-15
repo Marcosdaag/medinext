@@ -3,6 +3,9 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 
@@ -61,4 +64,12 @@ export class UsersController {
     return this.usersService.uploadAvatar(req.user.userId, file);
   }
 
+  //---Obtener listado de todos los users---
+  @Get()
+  @ApiOperation({ summary: 'Obtener todos los usuarios (Solo Super Admin)' })
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  getAllUsers() {
+    return this.usersService.findAllUsers();
+  }
 }

@@ -127,4 +127,19 @@ export class UsersService extends PrismaClient implements OnModuleInit {
             select: { id: true, avatarUrl: true }
         });
     }
+
+    //---Obtener todos los usuarios (Solo ADMIN)---
+    async findAllUsers() {
+        return this.user.findMany({
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                dni: true,
+                roles: true,
+                avatarUrl: true,
+                createdAt: true,
+            }
+        });
+    }
 }
