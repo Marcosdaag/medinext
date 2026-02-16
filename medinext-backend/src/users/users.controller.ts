@@ -68,8 +68,8 @@ export class UsersController {
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios (Solo Super Admin)' })
   @Roles(Role.SUPERADMIN)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(RolesGuard)
   getAllUsers() {
-    return this.usersService.findAllUsers();
+    return this.usersService.findAllUsers();  
   }
 }
