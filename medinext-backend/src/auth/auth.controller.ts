@@ -4,9 +4,11 @@ import { ApiTags, ApiOperation, ApiBearerAuth} from '@nestjs/swagger';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtAuthGuard } from './jwt.auth.guard';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 
 @ApiTags('Auth')
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
