@@ -1,14 +1,25 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
+
+// Importamos todos los DTOs
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password-dto';
+
+// Importamos el servicio de correos
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService extends PrismaClient {
 
-  constructor(private jwtService: JwtService) {
+  constructor(
+    private jwtService: JwtService,
+    private mailService: MailService
+  ) {
     super(); //inicializa Prisma
   }
 
@@ -34,7 +45,6 @@ export class AuthService extends PrismaClient {
       user: { id: user.id, email: user.email }
     };
   }
-
 
   //---Metodo-Funcion de login---
   async login(loginDto: LoginAuthDto) {
@@ -73,5 +83,68 @@ export class AuthService extends PrismaClient {
     });
 
     return { message: 'Sesión cerrada correctamente en todos los dispositivos.' };
+  }
+
+  // ---Metodo-Funcion para pedir recuperación de contraseña---
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
+    const { email } = forgotPasswordDto;
+    const user = await this.user.findUnique({ where: { email } });
+
+    if (!user) {
+      return { message: 'Si el correo está registrado, recibirás un enlace de recuperación.' };
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
+
+    await this.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken: resetToken,
+        resetPasswordExpires: resetPasswordExpires,
+      }
+    });
+
+    // 4. ¡Despachamos el correo!
+    await this.mailService.sendPasswordResetEmail(user.email, resetToken);
+
+    return { message: 'Si el correo está registrado, recibirás un enlace de recuperación.' };
+  }
+
+  // --- Metodo-Funcion para cambiar la contraseña con el token---
+  async resetPassword(resetPasswordDto: ResetPasswordDto) {
+    const { token, newPassword } = resetPasswordDto;
+
+    // 1. Buscamos un usuario que tenga ese token exacto Y que la fecha actual sea menor a la de vencimiento
+    const user = await this.user.findFirst({
+      where: {
+        resetPasswordToken: token,
+        resetPasswordExpires: {
+          gt: new Date(), // "gt" = greater than (mayor que ahora)
+        }
+      }
+    });
+
+    if (!user) {
+      throw new BadRequestException('El enlace de recuperación es inválido o ha expirado.');
+    }
+
+    // 2. Si todo está OK, hasheamos la nueva clave
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // 3. Guardamos la nueva clave y BORRAMOS el token para que no se pueda volver a usar
+    await this.user.update({
+      where: { id: user.id },
+      data: {
+        hashedPassword: hashedNewPassword,
+        resetPasswordToken: null,    // <-- Limpiamos el token
+        resetPasswordExpires: null,  // <-- Limpiamos el vencimiento
+        passwordChangedAt: new Date(),
+        tokenVersion: { increment: 1 } // <-- Matamos las sesiones viejas por seguridad
+      }
+    });
+
+    return { message: 'Contraseña actualizada correctamente. Ya puedes iniciar sesión.' };
   }
 }
