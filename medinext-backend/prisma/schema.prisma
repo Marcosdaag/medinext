@@ -38,16 +38,20 @@ model User {
   roles          Role[]  @default([USER])
 
   // Relaciones
-  doctorProfile DoctorProfile? // Relación 1:1 (Puede no ser doctor)
-  appointments  Appointment[] // Sus turnos como Paciente
+  doctorProfile DoctorProfile? // Relacionn 1:1 (Puede no ser doctor)
+  appointments  Appointment[]
 
-  // Auditoría
+  // Auditoria de modificacion de perfil
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Auditoría y update
+  // Auditoria del cambio de contraseña
   passwordChangedAt DateTime?
   tokenVersion      Int       @default(0)
+
+  // Modulo para la recuperacion de contraseña
+  resetPasswordToken   String?   // Guarda el código secreto temporal
+  resetPasswordExpires DateTime? // Guarda la hora límite para usarlo
 }
 
 // Modulo de gestion de doctores
