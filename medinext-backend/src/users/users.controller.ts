@@ -1,4 +1,4 @@
-import { Controller, Get, Body, Post, Patch, UseGuards, Request, UseInterceptors, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Body, Post, Patch, UseGuards, Request, UseInterceptors, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, UploadedFile, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
@@ -8,6 +8,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-admin';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -71,5 +72,14 @@ export class UsersController {
   @UseGuards(RolesGuard)
   getAllUsers() {
     return this.usersService.findAllUsers();  
+  }
+
+  //---Editar nombre y rol de usuario---
+  @Patch(':id/admin')
+  @ApiOperation({ summary: 'Editar cualquier usuario (Solo Super Admin)' })
+  @Roles(Role.SUPERADMIN)
+  @UseGuards(RolesGuard)
+  updateByAdmin(@Param('id') id: string, @Body() updateDto: UpdateUserByAdminDto) {
+    return this.usersService.updateUserByAdmin(id, updateDto);
   }
 }

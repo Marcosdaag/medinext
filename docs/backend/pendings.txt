@@ -1,2 +1,1 @@
---Capacidad de editar users SUPERADMIN (subir a rango doctor)
 --Capacidad de ver info de pacientes DOCTOR

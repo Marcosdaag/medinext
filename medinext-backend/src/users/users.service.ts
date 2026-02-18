@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import sharp from 'sharp';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-admin';
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {
 
@@ -144,5 +145,37 @@ export class UsersService extends PrismaClient implements OnModuleInit {
                 createdAt: true,
             }
         });
+    }
+
+    //---Editar nombre y ROL de cualquier usuario (Solo ADMIN)---
+    async updateUserByAdmin(id: string, updateDto: UpdateUserByAdminDto) {
+
+        const userExists = await this.user.findUnique({
+            where: { id },
+        });
+
+        if (!userExists) {
+            throw new NotFoundException(`El usuario con ID ${id} no existe en la base de datos.`);
+        }
+
+        const updatedUser = await this.user.update({
+            where: { id },
+            data: {
+                ...updateDto,
+            },
+            select: {
+                id: true,
+                email: true,
+                fullName: true,
+                roles: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+
+        return {
+            message: 'Usuario actualizado correctamente por el Administrador.',
+            user: updatedUser,
+        };
     }
 }

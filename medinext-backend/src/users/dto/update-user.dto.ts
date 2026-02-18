@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsOptional, MinLength } from 'class-validator';
+import { IsString, IsOptional, MinLength, IsDateString } from 'class-validator';
 
 export class UpdateUserDto {
     @ApiProperty({
@@ -29,4 +29,22 @@ export class UpdateUserDto {
     @IsOptional()
     @IsString()
     timeZone?: string;
+
+    @ApiProperty({
+        example: '+5491123456789',
+        description: 'Número de teléfono de contacto (con código de país)',
+        required: false
+    })
+    @IsOptional()
+    @IsString()
+    phoneNumber?: string;
+
+    @ApiProperty({
+        example: '1990-05-15T00:00:00.000Z',
+        description: 'Fecha de nacimiento en formato ISO 8601',
+        required: false
+    })
+    @IsOptional()
+    @IsDateString({}, { message: 'La fecha de nacimiento debe tener un formato válido (ej: 1990-05-15)' })
+    birthDate?: string;
 }

@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,13 +11,9 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-/**
- * @unique significa que esa propiedad no puede repetirse y es unico para el usuario
- * @default define que valor va a tomar por defecto la propiedad
- * ? aclara que esa propiedad es opcional para crear un objeto en la base de datos
- */
-
-// Modulo de usuarios
+// ==========================================
+// MODULO DE USUARIOS
+// ==========================================
 enum Role {
   SUPERADMIN
   DOCTOR
@@ -28,49 +21,58 @@ enum Role {
 }
 
 model User {
-  id             String  @id @default(uuid())
-  email          String  @unique
-  hashedPassword String
-  fullName       String
-  dni            String?  @unique
-  avatarUrl      String?
-  timeZone       String  @default("UTC") // Importante para manejar turnos internacionales
-  roles          Role[]  @default([USER])
+  // 1. Llave Primaria
+  id String @id @default(uuid())
 
-  // Relaciones
-  doctorProfile DoctorProfile? // Relacionn 1:1 (Puede no ser doctor)
+  // 2. Datos del Perfil
+  email       String    @unique
+  dni         String?   @unique
+  fullName    String
+  phoneNumber String?
+  birthDate   DateTime?
+  avatarUrl   String?
+  timeZone    String    @default("UTC")
+
+  // 3. Seguridad y Estados
+  hashedPassword       String
+  roles                Role[]    @default([USER])
+  isActive             Boolean   @default(true)
+  tokenVersion         Int       @default(0)
+  passwordChangedAt    DateTime?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+
+  // 4. Relaciones
+  doctorProfile DoctorProfile?
   appointments  Appointment[]
 
-  // Auditoria de modificacion de perfil
+  // 5. Auditoría
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Auditoria del cambio de contraseña
-  passwordChangedAt DateTime?
-  tokenVersion      Int       @default(0)
-
-  // Modulo para la recuperacion de contraseña
-  resetPasswordToken   String?   // Guarda el código secreto temporal
-  resetPasswordExpires DateTime? // Guarda la hora límite para usarlo
 }
 
-// Modulo de gestion de doctores
+// ==========================================
+// MODULO DE DOCTORES
+// ==========================================
 model DoctorProfile {
-  id            String  @id @default(uuid())
+  // 1. Llave Primaria
+  id String @id @default(uuid())
+
+  // 2. Datos del Perfil Médico
   specialty     String
   visitDuration Int     @default(30)
   visitPrice    Decimal @db.Decimal(10, 2)
 
-  // Relación 1:1 con User (Un usuario ES un doctor)
+  // 3. Llave Foránea y Relaciones
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
-  // Agenda y Disponibilidad
-  availabilities Availability[] // Horarios fijos semanales
-  overrides      ScheduleOverride[] // Excepciones (vacaciones, feriados)
+  availabilities Availability[]
+  overrides      ScheduleOverride[]
+  appointments   Appointment[]
 
-  // Turnos que el doctor va a atender
-  appointments Appointment[]
+  // 6. Índices de Búsqueda
+  @@index([specialty])
 }
 
 model Availability {
@@ -79,22 +81,23 @@ model Availability {
   startTime String
   endTime   String
 
-  // Relación
   doctorId String
   doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
 }
 
 model ScheduleOverride {
   id        String   @id @default(uuid())
-  startDate DateTime // Fecha y hora de inicio del bloqueo
-  endDate   DateTime // Fecha y hora de fin
-  reason    String? // Ej: "Congreso Médico"
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
 
   doctorId String
   doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
 }
 
-// Modulo de turnos
+// ==========================================
+// MODULO DE TURNOS E HISTORIA CLINICA
+// ==========================================
 enum AppointmentStatus {
   PENDING
   CONFIRMED
@@ -103,19 +106,46 @@ enum AppointmentStatus {
 }
 
 model Appointment {
-  id        String            @id @default(uuid())
-  dateUTC   DateTime
-  status    AppointmentStatus @default(PENDING)
-  paymentId String?
+  // 1. Llave Primaria
+  id String @id @default(uuid())
 
-  // Paciente que solicita
+  // 2. Datos del Turno
+  dateUTC      DateTime
+  status       AppointmentStatus @default(PENDING)
+  paymentId    String?
+  cancelReason String?
+
+  // 3. Llaves Foráneas y Relaciones
   patientId String
   patient   User   @relation(fields: [patientId], references: [id])
 
-  // Doctor que atiende
   doctorId String
   doctor   DoctorProfile @relation(fields: [doctorId], references: [id])
 
+  medicalRecord MedicalRecord?
+
+  // 5. Auditoría
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // 6. Índices de Búsqueda
+  @@index([patientId])
+  @@index([doctorId, dateUTC])
+}
+
+model MedicalRecord {
+  // 1. Llave Primaria
+  id String @id @default(uuid())
+
+  // 2. Datos Médicos
+  diagnosis    String
+  prescription String?
+  notes        String?
+
+  // 3. Llave Foránea y Relación
+  appointmentId String      @unique
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+
+  // 5. Auditoría
+  createdAt DateTime @default(now())
 }
