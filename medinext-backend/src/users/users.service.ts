@@ -6,6 +6,7 @@ import sharp from 'sharp';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserByAdminDto } from './dto/update-user-admin';
 import { UpdateUserDto } from './dto/update-user.dto';
+
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {
 

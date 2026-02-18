@@ -24,7 +24,7 @@ export class UsersController {
     return this.usersService.findOne(req.user.userId);
   }
 
-  //---Actualizar datos obligatorios del user
+  //---Actualizar datos obligatorios del user---
   @Patch('profile')
   @ApiOperation({ summary: 'Actualizar datos' })
   updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
@@ -56,8 +56,8 @@ export class UsersController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 5242880 }), // Máximo 5MB
-          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }), // Solo imágenes
+          new MaxFileSizeValidator({ maxSize: 5242880 }), // Maximo 5MB
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }), // Solo imagenes
         ],
       }),
     ) file: Express.Multer.File,

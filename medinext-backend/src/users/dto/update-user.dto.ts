@@ -4,7 +4,7 @@ import { IsDateString, IsOptional, IsString, MinLength } from 'class-validator';
 export class UpdateUserDto {
     @ApiProperty({
         example: 'Juan Perez',
-        description: 'Nombre completo del usuario',
+        description: 'Nombre completo del usuario.',
         required: false
     })
     @IsOptional()
@@ -14,7 +14,7 @@ export class UpdateUserDto {
 
     @ApiProperty({
         example: '12345678',
-        description: 'DNI o Documento de Identidad',
+        description: 'DNI o Documento de Identidad.',
         required: false
     })
     @IsOptional()
@@ -23,7 +23,7 @@ export class UpdateUserDto {
 
     @ApiProperty({
         example: 'America/Argentina/Buenos_Aires',
-        description: 'Zona horaria para los turnos',
+        description: 'Zona horaria para los turnos.',
         required: false
     })
     @IsOptional()
@@ -32,7 +32,7 @@ export class UpdateUserDto {
 
     @ApiProperty({
         example: '+5491123456789',
-        description: 'Número de teléfono de contacto (con código de país)',
+        description: 'Número de teléfono de contacto (con código de país).',
         required: false
     })
     @IsOptional()
@@ -40,11 +40,11 @@ export class UpdateUserDto {
     phoneNumber?: string;
 
     @ApiProperty({
-        example: '1990-05-15T00:00:00.000Z',
+        example: '1990-05-15',
         description: 'Fecha de nacimiento en formato ISO 8601',
         required: false
     })
     @IsOptional()
-    @IsDateString({}, { message: 'La fecha de nacimiento debe tener un formato válido (ej: 1990-05-15)' })
+    @IsDateString({}, { message: 'La fecha de nacimiento debe tener un formato válido (ej: 1990-05-15).' })
     birthDate?: string;
 }

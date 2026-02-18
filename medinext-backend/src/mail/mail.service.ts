@@ -33,21 +33,21 @@ export class MailService {
         }
     }
 
-    // --- Función específica para el reseteo de clave ---
+    //---Función específica para el reseteo de clave---
     async sendPasswordResetEmail(to: string, token: string) {
-        // En el futuro esta URL apuntará a tu frontend en React/Angular
+        //En el futuro esta URL apuntara al frontend en Angular
         const resetLink = `http://localhost:4200/reset-password?token=${token}`;
 
         const html = `
       <div style="font-family: Arial, sans-serif; padding: 20px;">
         <h2>Recuperación de contraseña</h2>
         <p>Hola,</p>
-        <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en Medinext.</p>
+        <p>Recibimos una solicitud para restablecer la contraseña de tu.</p>
         <p>Hacé clic en el siguiente botón para crear una nueva contraseña:</p>
-        <a href="${resetLink}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+        <a href="${resetLink}" style="background-color: #39aa0c; color: white; padding: 20px 40px; text-decoration: none; border-radius: 5px; display: inline-block; border: 2px solid black;">
           Restablecer Contraseña
         </a>
-        <p style="margin-top: 20px; font-size: 12px; color: #777;">
+        <p style="margin-top: 20px; font-size: 12px; color: #353535;">
           Si no solicitaste esto, podés ignorar este correo. El enlace expirará en 15 minutos.
         </p>
       </div>

@@ -12,7 +12,7 @@ import { UsersModule } from './users/users.module';
     }),
     ThrottlerModule.forRoot([{
       ttl: 60000, //60k milisegundos = 60 segundos
-      limit: 5 //cantidad de peticiones permitidas en ese lapso de tiempo
+      limit: 5 //Cantidad de peticiones permitidas en ese lapso de tiempo
     }]),
     AuthModule,
     UsersModule,

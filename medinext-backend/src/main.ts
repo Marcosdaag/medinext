@@ -5,7 +5,7 @@ import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  //Se crea el modulo contenedor de toda la app
+  //---Se crea el modulo contenedor de toda la app---
   const app = await NestFactory.create(AppModule);
 
   //---Aumento de limite de subida---
@@ -14,8 +14,8 @@ async function bootstrap() {
 
   //---Configuracion de swagger---
   const config = new DocumentBuilder()
-    .setTitle('Medinext API')
-    .setDescription('Documentacion de la API de Medinext')
+    .setTitle('Medinext App')
+    .setDescription('Documentacion de API medica.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
