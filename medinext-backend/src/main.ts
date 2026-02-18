@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
+import { AppModule } from './app.module';
 
 async function bootstrap() {
   //Se crea el modulo contenedor de toda la app
@@ -11,15 +11,15 @@ async function bootstrap() {
   //---Aumento de limite de subida---
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
-  
+
   //---Configuracion de swagger---
   const config = new DocumentBuilder()
-  .setTitle('Medinext API')
-  .setDescription('Documentacion de la API de Medinext')
-  .setVersion('1.0')
-  .addBearerAuth()
-  .build();
-  
+    .setTitle('Medinext API')
+    .setDescription('Documentacion de la API de Medinext')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 

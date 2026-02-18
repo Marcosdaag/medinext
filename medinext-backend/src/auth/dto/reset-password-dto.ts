@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class ResetPasswordDto {
     @ApiProperty({ description: 'El token secreto enviado al correo' })

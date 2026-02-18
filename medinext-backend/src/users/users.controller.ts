@@ -1,14 +1,14 @@
-import { Controller, Get, Body, Post, Patch, UseGuards, Request, UseInterceptors, ParseFilePipe, MaxFileSizeValidator, FileTypeValidator, UploadedFile, Param } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
-import { UsersService } from './users.service';
-import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { JwtAuthGuard } from 'src/auth/jwt.auth.guard';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserByAdminDto } from './dto/update-user-admin';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -71,7 +71,7 @@ export class UsersController {
   @Roles(Role.SUPERADMIN)
   @UseGuards(RolesGuard)
   getAllUsers() {
-    return this.usersService.findAllUsers();  
+    return this.usersService.findAllUsers();
   }
 
   //---Editar nombre y rol de usuario---

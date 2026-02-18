@@ -1,13 +1,13 @@
-import { Controller, Post, Body, Request, UseGuards } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './jwt.auth.guard';
 
 // Importamos todos los validadores (DTOs)
-import { RegisterAuthDto } from './dto/register-auth.dto';
-import { LoginAuthDto } from './dto/login-auth.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 import { ResetPasswordDto } from './dto/reset-password-dto';
 
 

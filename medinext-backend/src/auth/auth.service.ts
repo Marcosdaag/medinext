@@ -1,13 +1,13 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 
 // Importamos todos los DTOs
-import { RegisterAuthDto } from './dto/register-auth.dto';
-import { LoginAuthDto } from './dto/login-auth.dto';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
+import { RegisterAuthDto } from './dto/register-auth.dto';
 import { ResetPasswordDto } from './dto/reset-password-dto';
 
 // Importamos el servicio de correos

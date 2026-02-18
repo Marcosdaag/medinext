@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule} from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -20,4 +20,4 @@ import { ThrottlerModule } from '@nestjs/throttler';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
