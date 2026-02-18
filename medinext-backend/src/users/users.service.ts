@@ -1,15 +1,17 @@
-import { Injectable, OnModuleInit, BadRequestException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, OnModuleInit, UnauthorizedException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { createClient } from '@supabase/supabase-js';
 import * as bcrypt from 'bcrypt';
+import sharp from 'sharp';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import sharp from 'sharp';
 @Injectable()
 export class UsersService extends PrismaClient implements OnModuleInit {
 
+    //Instancio la clase de supabase.
     private supabase;
 
+    //Al usar OnModuleInit es necesario crear un constructor para definir su accionar al instanciarse, seteo las variables.
     constructor() {
         super();
         this.supabase = createClient(
@@ -18,6 +20,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
         );
     }
 
+    //Me conecto a la db
     async onModuleInit() {
         await this.$connect();
     }
@@ -63,7 +66,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
             where: { id: userId }
         });
 
-        //En caso de haber un error (comunmente token expired) mandamos usuario no encontrado
+        //En caso de haber un error mandamos usuario no encontrado
         if (!user) {
             throw new NotFoundException('Usuario no encontrado.');
         }
@@ -73,7 +76,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
 
         //Manejamos el error de ingresar una password incorrecta
         if (!isPasswordValid) {
-            throw new UnauthorizedException('La contraseña anterior es incorrecta.');
+            throw new UnauthorizedException('La contraseña previa ingresada es incorrecta.');
         }
 
         //Hasheamos la nueva password
@@ -85,7 +88,7 @@ export class UsersService extends PrismaClient implements OnModuleInit {
             data: {
                 hashedPassword: hashedNewPassword,
                 passwordChangedAt: new Date(),
-                tokenVersion: { increment: 1 }
+                tokenVersion: { increment: 1 } //Incrementamos el valor de token version para que al cambiar nos cierre la sesion
             }
         });
 
