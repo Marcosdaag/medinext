@@ -68,7 +68,7 @@ export class UsersController {
   //---Obtener listado de todos los users---
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios (Solo Super Admin)' })
-  @Roles(Role.SUPERADMIN)
+  @Roles(Role.SUPERADMIN, Role.DOCTOR)
   @UseGuards(RolesGuard)
   getAllUsers() {
     return this.usersService.findAllUsers();
