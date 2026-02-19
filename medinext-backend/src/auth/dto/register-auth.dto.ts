@@ -15,7 +15,7 @@ export class RegisterAuthDto {
 
     @ApiProperty({ example: 'Secret123', minLength: 6 })
     @IsString()
-    @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
+    @IsNotEmpty({ message: 'La contraseña no puede estar vacía.' })
     @MinLength(6, { message: 'La debe tener un mínimo de seis carácteres.' })
     @MaxLength(25, { message: 'La debe tener un máximo de veinticinco carácteres.' })
     password: string;

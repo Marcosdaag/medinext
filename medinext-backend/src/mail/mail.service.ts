@@ -6,7 +6,7 @@ export class MailService {
     private transporter;
 
     constructor() {
-        // Configuramos el "cartero" con los datos de Gmail
+        //Configuramos el "cartero" con los datos de Gmail
         this.transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -16,7 +16,7 @@ export class MailService {
         });
     }
 
-    // Función genérica para enviar cualquier correo
+    //---Función genérica para enviar cualquier correo---
     async sendMail(to: string, subject: string, html: string) {
         try {
             const info = await this.transporter.sendMail({
