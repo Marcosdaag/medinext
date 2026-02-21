@@ -1,25 +1,45 @@
-import { UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { Test, TestingModule } from '@nestjs/testing';
-import * as bcrypt from 'bcrypt';
-import { MailService } from '../mail/mail.service';
-import { AuthService } from './auth.service';
+/* 
+    Los testings sirven para sellar un contrato de ingreso/egreso de datos,
+    se busca que una funcion especifica reciba y devuelva exactamente la respuesta que esperamos,
+    una vez fijado nos va a servir en un futuro ya que al refactorizar, cambiar o agregar cosas en el codigo
+    nos muestra en tiempo real si el codigo con los cambios siguen pasando los tests (contratos).
+    Se pueden ver los cambios con npm run test:watch
+*/
 
+//En resumen para testear generamos un escenario de prueba con cada unos de nuestros actores (imports)
+
+import { UnauthorizedException } from '@nestjs/common'; //Error a probar
+import { Test, TestingModule } from '@nestjs/testing'; //Herramientas de nest para test
+import { JwtService } from '@nestjs/jwt'; //Servicio complementario
+import { MailService } from '../mail/mail.service'; //Servicio complementario
+import * as bcrypt from 'bcrypt'; //Libreria externa
+import { AuthService } from './auth.service'; //Service a testear
+
+//Jest toma el control de la libreria
 jest.mock('bcrypt');
 
+//Crea un objeto "falso" con una funcion sign que mas adelante vamos a definirle un comportamiento
 const mockJwtService = {
     sign: jest.fn(),
 };
 
+//Otro objeto "falso"
 const mockMailService = {
     sendPasswordResetEmail: jest.fn(),
 };
 
+
+//Definimos el titulo de lo que vamos a testear, en este caso 'AuthService'
 describe('AuthService', () => {
+    //Llama al servicio
     let service: AuthService;
+
+    //Llama a el "falso" jwtservice
     let jwtService: typeof mockJwtService;
 
+    //El beforeEach nos asegura generar un entorno nuevo y limpio antes de cada test
     beforeEach(async () => {
+        //Construimos un modulo falso con el nombre del provide y el valor de las copias de mis servicios
         const module: TestingModule = await Test.createTestingModule({
             providers: [
                 AuthService,
@@ -34,27 +54,31 @@ describe('AuthService', () => {
             ],
         }).compile();
 
+        //Agarramos los servicios ya armados y los guardamos en variables para poder llamarlos mas adelante
         service = module.get<AuthService>(AuthService);
         jwtService = module.get(JwtService);
 
-        // EL SECRETO: Interceptamos la llamada directa a Prisma dentro del servicio
+
         (service as any).user = {
             findUnique: jest.fn(),
         } as any;
     });
 
+    //Comprueba que la variable service no sea nula y que la configuracion previa funciona correctamente
     it('debería estar definido', () => {
         expect(service).toBeDefined();
     });
 
-    // ==========================================
-    // BLOQUE DE TEST: MÉTODO LOGIN
-    // ==========================================
+
+
+    //---TESTS---
+
     describe('login', () => {
 
-        // --- TEST 1: EL CAMINO FELIZ (ÉXITO) ---
+        //---Escenario positivo---
         it('debería retornar un access_token cuando el login es exitoso', async () => {
-            // 1. ARRANGE
+
+            //Variables de prueba
             const loginDto = {
                 email: 'doctor@medinext.com',
                 password: 'password123'
@@ -65,45 +89,41 @@ describe('AuthService', () => {
                 email: 'doctor@medinext.com',
                 hashedPassword: 'un_hash_falso',
                 roles: ['DOCTOR'],
-                tokenVersion: 0 // <-- ¡Agregado gracias a tu captura!
+                tokenVersion: 0
             };
 
             const expectedToken = 'un_token_jwt_falso_muy_largo';
 
-            // Le decimos al Prisma falso cómo responder (casteando a any para engañar a TypeScript)
-            ((service as any).user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+            //Le decimos a las funciones que hacer
+            ((service as any).user.findUnique as jest.Mock).mockResolvedValue(mockUser); //Cuando la llamemos, que devuelva el MockUp de User
+            jwtService.sign.mockReturnValue(expectedToken); //Cuando la llamemos devuelva el token
+            (bcrypt.compare as jest.Mock).mockResolvedValue(true); //Cuando la llamemos compare el token y deuvleva true
 
-            jwtService.sign.mockReturnValue(expectedToken);
-            (bcrypt.compare as jest.Mock).mockResolvedValue(true);
-
-            // 2. ACT
+            //Guardamos al resultado de intentar hacer un login en la variable result
             const result = await service.login(loginDto as any);
 
-            // 3. ASSERT
-            expect(result).toEqual({
-                access_token: expectedToken,
-            });
+            //Resultados esperados
+            expect(result).toEqual({ access_token: expectedToken, });
 
-            // Verificamos que buscó usando la sintaxis exacta de tu código
             expect((service as any).user.findUnique).toHaveBeenCalledWith({
                 where: { email: loginDto.email }
             });
+
         });
 
-        // --- TEST 2: EL CAMINO TRISTE (ERROR) ---
+        //---Escenario negativo---
         it('debería lanzar UnauthorizedException si el usuario no existe', async () => {
-            // 1. ARRANGE: Le mandamos un mail inventado
+            //Creamos un email inventado
             const loginDto = {
                 email: 'fantasma@medinext.com',
                 password: '123'
             };
 
-            // Le decimos a Prisma: "Buscá, pero devolvé null porque el mail no existe"
+            //Le decimos que el valor del email enviado es null
             ((service as any).user.findUnique as jest.Mock).mockResolvedValue(null);
 
-            // 2 & 3. ACT & ASSERT juntos: 
-            // Esperamos que, al intentar loguearse, explote con el error 401
             await expect(service.login(loginDto as any)).rejects.toThrow(UnauthorizedException);
         });
     });
+
 });
