@@ -102,7 +102,6 @@ export class AuthService extends PrismaClient {
       }
     });
 
-    // 4. ¡Despachamos el correo!
     await this.mailService.sendPasswordResetEmail(user.email, resetToken);
 
     return { message: 'Si el correo está registrado, recibirás un enlace de recuperación.' };

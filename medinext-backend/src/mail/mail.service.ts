@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
+/* 
+    El mail service se encarga unicamente de el envio de emails,
+    en primer lugar tenemos una funcion de mails globales y despues
+    mas especificamente un email para la recuperacion de contraseña.
+*/
 @Injectable()
 export class MailService {
     private transporter;
@@ -20,7 +25,7 @@ export class MailService {
     async sendMail(to: string, subject: string, html: string) {
         try {
             const info = await this.transporter.sendMail({
-                from: `"Medical App" <${process.env.SMTP_USER}>`, // Remitente
+                from: `"Medical App" <${process.env.SMTP_USER}>`,     // Remitente
                 to,                                                   // Destinatario
                 subject,                                              // Asunto
                 html,                                                 // Cuerpo del mail en HTML
@@ -42,8 +47,8 @@ export class MailService {
       <div style="font-family: Arial, sans-serif; padding: 20px;">
         <h2>Recuperación de contraseña</h2>
         <p>Hola,</p>
-        <p>Recibimos una solicitud para restablecer la contraseña de tu.</p>
-        <p>Hacé clic en el siguiente botón para crear una nueva contraseña:</p>
+        <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta.</p>
+        <p>Hacé click en el siguiente botón para crear una nueva contraseña:</p>
         <a href="${resetLink}" style="background-color: #39aa0c; color: white; padding: 20px 40px; text-decoration: none; border-radius: 5px; display: inline-block; border: 2px solid black;">
           Restablecer Contraseña
         </a>

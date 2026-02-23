@@ -4,6 +4,10 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 
+/* 
+  El appModule se encarga de empaquetar toda la aplicacion,
+  funciona como modulo principal por lo que junta todos los modulos creados.
+*/
 @Module({
   imports: [
     //Esto carga el archivo .env para que toda la app lo pueda leer

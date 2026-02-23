@@ -32,7 +32,7 @@ export class UpdateUserDto {
 
     @ApiProperty({
         example: '+5491123456789',
-        description: 'Número de teléfono de contacto (con código de país).',
+        description: 'Número de teléfono de contacto (con código de país)',
         required: false
     })
     @IsOptional()

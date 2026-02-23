@@ -65,7 +65,7 @@ export class UsersController {
     return this.usersService.uploadAvatar(req.user.userId, file);
   }
 
-  //---Obtener listado de todos los users---
+  //---Obtener listado de todos los users (ADMIN)---
   @Get()
   @ApiOperation({ summary: 'Obtener todos los usuarios (Solo Super Admin)' })
   @Roles(Role.SUPERADMIN, Role.DOCTOR)

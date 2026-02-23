@@ -84,7 +84,7 @@ describe('AuthService', () => {
 
         //---Escenario positivo---
         it('debería retornar un access_token cuando el login es exitoso', async () => {
-
+            // 1. ARRANGE
             //Variables de prueba
             const loginDto = {
                 email: 'doctor@medinext.com',
@@ -106,9 +106,11 @@ describe('AuthService', () => {
             jwtService.sign.mockReturnValue(expectedToken); //Cuando la llamemos devuelva el token
             (bcrypt.compare as jest.Mock).mockResolvedValue(true); //Cuando la llamemos compare el token y deuvleva true
 
+            // 2. ACT
             //Guardamos al resultado de intentar hacer un login en la variable result
             const result = await service.login(loginDto as any);
 
+            // 3. ASSERT
             //Resultados esperados
             expect(result).toEqual({ access_token: expectedToken, });
 
@@ -169,31 +171,31 @@ describe('AuthService', () => {
     //---TEST DE FORGOT PASSWORD---
     describe('forgotPassword', () => {
         it('debería generar token y enviar correo si el usuario existe', async () => {
-            // ARRANGE
+            // 1. ARRANGE
             const dto = { email: 'doctor@medinext.com' };
             const mockUser = { id: '1', email: 'doctor@medinext.com' };
 
             ((service as any).user.findUnique as jest.Mock).mockResolvedValue(mockUser);
             ((service as any).user.update as jest.Mock).mockResolvedValue(mockUser);
 
-            // ACT
+            // 2. ACT
             const result = await service.forgotPassword(dto);
 
-            // ASSERT
+            // 3. ASSERT
             expect(result.message).toContain('Si el correo está registrado');
             expect((service as any).user.update).toHaveBeenCalled(); // Verifica que se guardó el token
             expect(mailService.sendPasswordResetEmail).toHaveBeenCalled(); // Verifica que salió el mail
         });
 
         it('debería devolver el mismo mensaje sin enviar correo si el usuario no existe', async () => {
-            // ARRANGE
+            // 1. ARRANGE
             const dto = { email: 'no_existo@medinext.com' };
             ((service as any).user.findUnique as jest.Mock).mockResolvedValue(null);
 
-            // ACT
+            // 2. ACT
             const result = await service.forgotPassword(dto);
 
-            // ASSERT
+            // 3. ASSERT
             expect(result.message).toContain('Si el correo está registrado');
             expect((service as any).user.update).not.toHaveBeenCalled(); // No debe guardar nada
             expect(mailService.sendPasswordResetEmail).not.toHaveBeenCalled(); // No debe mandar mail
@@ -203,7 +205,7 @@ describe('AuthService', () => {
     //---TEST DE RESET PASSWORD---
     describe('resetPassword', () => {
         it('debería actualizar la contraseña si el token es válido', async () => {
-            // ARRANGE
+            // 1. ARRANGE
             const dto = { token: 'token_valido', newPassword: 'newPassword123' };
             const mockUser = { id: '1' };
             const newHash = 'nuevo_hash_seguro';
@@ -211,10 +213,10 @@ describe('AuthService', () => {
             ((service as any).user.findFirst as jest.Mock).mockResolvedValue(mockUser);
             (bcrypt.hash as jest.Mock).mockResolvedValue(newHash);
 
-            // ACT
+            // 2. ACT
             const result = await service.resetPassword(dto);
 
-            // ASSERT
+            // 3. ASSERT
             expect(result.message).toContain('Contraseña actualizada correctamente');
             expect(bcrypt.hash).toHaveBeenCalledWith(dto.newPassword, 10);
             expect((service as any).user.update).toHaveBeenCalledWith(
@@ -229,11 +231,11 @@ describe('AuthService', () => {
         });
 
         it('debería lanzar BadRequestException si el token es inválido o expiró', async () => {
-            // ARRANGE
+            // 1. ARRANGE
             const dto = { token: 'token_vencido', newPassword: '123' };
             ((service as any).user.findFirst as jest.Mock).mockResolvedValue(null); // No lo encuentra
 
-            // ACT & ASSERT
+            // 2/3. ACT & ASSERT
             await expect(service.resetPassword(dto)).rejects.toThrow(BadRequestException);
         });
     });
