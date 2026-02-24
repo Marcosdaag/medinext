@@ -55,15 +55,15 @@ model User {
 // MODULO DE DOCTORES
 // ==========================================
 model DoctorProfile {
-  // 1. Llave Primaria
+  //Llave Primaria
   id String @id @default(uuid())
 
-  // 2. Datos del Perfil Médico
+  //Datos del Perfil Médico
   specialty     String
   visitDuration Int     @default(30)
   visitPrice    Decimal @db.Decimal(10, 2)
 
-  // 3. Llave Foránea y Relaciones
+  //Llave Foránea y Relaciones
   userId String @unique
   user   User   @relation(fields: [userId], references: [id])
 
@@ -71,7 +71,11 @@ model DoctorProfile {
   overrides      ScheduleOverride[]
   appointments   Appointment[]
 
-  // 6. Índices de Búsqueda
+  //Auditoría
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //Índices de Búsqueda
   @@index([specialty])
 }
 

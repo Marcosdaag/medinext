@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { DoctorsModule } from './doctors/doctors.module';
 
 /* 
   El appModule se encarga de empaquetar toda la aplicacion,
@@ -20,6 +21,7 @@ import { UsersModule } from './users/users.module';
     }]),
     AuthModule,
     UsersModule,
+    DoctorsModule,
   ],
   controllers: [],
   providers: [],
