@@ -1,22 +1,22 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+import { MailService } from '../mail/mail.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { ResetPasswordDto } from './dto/reset-password-dto';
-import { MailService } from '../mail/mail.service';
 
 @Injectable()
-export class AuthService extends PrismaClient {
+export class AuthService {
 
   constructor(
+    private prisma: PrismaService,
     private jwtService: JwtService,
     private mailService: MailService
   ) {
-    super(); //inicializa Prisma
   }
 
   //---Metodo-Funcion de registro---
@@ -27,7 +27,7 @@ export class AuthService extends PrismaClient {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     //Guardar datos en la db
-    const user = await this.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email,
         fullName,
@@ -47,7 +47,7 @@ export class AuthService extends PrismaClient {
     const { email, password } = loginDto;
 
     //Busca usuario por email
-    const user = await this.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: { email },
     });
 
@@ -71,7 +71,7 @@ export class AuthService extends PrismaClient {
   //---Metodo-Funcion de logout en todos los dispositivos---
   async logout(userId: string) {
     //Hago un update del token y tdos los actuales mueren
-    await this.user.update({
+    await this.prisma.user.update({
       where: { id: userId },
       data: {
         tokenVersion: { increment: 1 }
@@ -84,7 +84,7 @@ export class AuthService extends PrismaClient {
   //---Metodo-Funcion para pedir recuperación de contraseña---
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
-    const user = await this.user.findUnique({ where: { email } });
+    const user = await this.prisma.user.findUnique({ where: { email } });
 
     if (!user) {
       return { message: 'Si el correo está registrado, recibirás un enlace de recuperación.' };
@@ -94,7 +94,7 @@ export class AuthService extends PrismaClient {
 
     const resetPasswordExpires = new Date(Date.now() + 15 * 60 * 1000);
 
-    await this.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         resetPasswordToken: resetToken,
@@ -112,7 +112,7 @@ export class AuthService extends PrismaClient {
     const { token, newPassword } = resetPasswordDto;
 
     //Buscamos un usuario que tenga ese token exacto Y que la fecha actual sea menor a la de vencimiento
-    const user = await this.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: {
         resetPasswordToken: token,
         resetPasswordExpires: {
@@ -129,7 +129,7 @@ export class AuthService extends PrismaClient {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
     //Guardamos la nueva clave y BORRAMOS el token para que no se pueda volver a usar
-    await this.user.update({
+    await this.prisma.user.update({
       where: { id: user.id },
       data: {
         hashedPassword: hashedNewPassword,

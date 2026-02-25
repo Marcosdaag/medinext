@@ -4,6 +4,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { DoctorsModule } from './doctors/doctors.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 /* 
   El appModule se encarga de empaquetar toda la aplicacion,
@@ -22,6 +23,7 @@ import { DoctorsModule } from './doctors/doctors.module';
     AuthModule,
     UsersModule,
     DoctorsModule,
+    PrismaModule,
   ],
   controllers: [],
   providers: [],
