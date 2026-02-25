@@ -20,10 +20,10 @@ import { PrismaModule } from './prisma/prisma.module';
       ttl: 60000, //60k milisegundos = 60 segundos
       limit: 5 //Cantidad de peticiones permitidas en ese lapso de tiempo
     }]),
+    PrismaModule,
     AuthModule,
     UsersModule,
     DoctorsModule,
-    PrismaModule,
   ],
   controllers: [],
   providers: [],
