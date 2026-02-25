@@ -61,7 +61,7 @@ model DoctorProfile {
   //Datos del Perfil Médico
   specialty     String
   visitDuration Int     @default(30)
-  visitPrice    Decimal @db.Decimal(10, 2)
+  visitPrice    Decimal @default(0.00) @db.Decimal(10, 2)
 
   //Llave Foránea y Relaciones
   userId String @unique
