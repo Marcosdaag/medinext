@@ -7,7 +7,10 @@ import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { CreateOverrideDto } from './dto/create-override.dto';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Doctors')
+@ApiBearerAuth()
 @Controller('doctors')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('DOCTOR')

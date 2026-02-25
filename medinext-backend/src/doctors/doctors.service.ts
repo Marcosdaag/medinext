@@ -1,19 +1,24 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+// import { PrismaClient } from '@prisma/client'; <--- ELIMINADO: Ya no lo usamos directo
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { CreateOverrideDto } from './dto/create-override.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
+import { PrismaService } from '../prisma/prisma.service'; // <--- IMPORTANTE: Usamos nuestro servicio
 
 @Injectable()
 export class DoctorsService {
-  constructor(private prisma: PrismaClient) {}
+
+  // CORRECCIÓN CLAVE: Inyectamos PrismaService, no PrismaClient
+  constructor(private prisma: PrismaService) { }
 
   //---Metodo para completar datos al tener el rango de DOCTOR---
   async createProfile(userId: string, dto: CreateDoctorDto) {
     const existing = await this.prisma.doctorProfile.findUnique({ where: { userId } });
     if (existing) throw new BadRequestException('Ya tenés un perfil médico activo.');
 
+    // Nota: Como ya pusimos defaults en el Schema, podrías borrar visitPrice y visitDuration de acá,
+    // pero dejarlos explícitos tampoco hace daño.
     return this.prisma.doctorProfile.create({
       data: {
         userId,
@@ -57,7 +62,7 @@ export class DoctorsService {
     if (!profile) throw new NotFoundException('Perfil médico no encontrado.');
 
     if (dto.startTime >= dto.endTime) {
-        throw new BadRequestException('La hora de fin debe ser mayor a la de inicio.');
+      throw new BadRequestException('La hora de fin debe ser mayor a la de inicio.');
     }
 
     return this.prisma.availability.create({
