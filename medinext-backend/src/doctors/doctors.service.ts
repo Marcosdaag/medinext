@@ -1,15 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-// import { PrismaClient } from '@prisma/client'; <--- ELIMINADO: Ya no lo usamos directo
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { CreateOverrideDto } from './dto/create-override.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
-import { PrismaService } from '../prisma/prisma.service'; // <--- IMPORTANTE: Usamos nuestro servicio
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class DoctorsService {
 
-  // CORRECCIÓN CLAVE: Inyectamos PrismaService, no PrismaClient
   constructor(private prisma: PrismaService) { }
 
   //---Metodo para completar datos al tener el rango de DOCTOR---
@@ -17,8 +15,6 @@ export class DoctorsService {
     const existing = await this.prisma.doctorProfile.findUnique({ where: { userId } });
     if (existing) throw new BadRequestException('Ya tenés un perfil médico activo.');
 
-    // Nota: Como ya pusimos defaults en el Schema, podrías borrar visitPrice y visitDuration de acá,
-    // pero dejarlos explícitos tampoco hace daño.
     return this.prisma.doctorProfile.create({
       data: {
         userId,

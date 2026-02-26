@@ -1,4 +1,0 @@
---Comentar, refactorizar y ordenar todos los modulos hasta ahora
---Testear los endpoints de doctores
---Ver que todo funcione bien con el prisma service (CONNECT A LA DB)
---Hacer desarrollo y testing del modulo de doctores
