@@ -22,7 +22,7 @@ export class UsersService {
     }
 
 
-    // ---Metodo para buscar un usuario---
+    //---Metodo para buscar un usuario---
     async findOne(id: string) {
         return this.prisma.user.findUnique({
             where: { id },
@@ -38,7 +38,7 @@ export class UsersService {
         });
     }
 
-    // ---Actualizar datos del perfil---
+    //---Actualizar datos del perfil---
     async updateProfile(id: string, updateUserDto: UpdateUserDto) {
         return this.prisma.user.update({
             where: { id },
@@ -54,32 +54,32 @@ export class UsersService {
         });
     }
 
-    // ---Cambiar contraseña---
+    //---Cambiar contraseña---
     async changePassword(userId: string, changePasswordDto: ChangePasswordDto) {
         const { oldPassword, newPassword } = changePasswordDto;
 
-        // Buscamos al usuario en la base de datos
+        //Buscamos al usuario en la base de datos
         const user = await this.prisma.user.findUnique({
             where: { id: userId }
         });
 
-        // En caso de haber un error mandamos usuario no encontrado
+        //En caso de haber un error mandamos usuario no encontrado
         if (!user) {
             throw new NotFoundException('Usuario no encontrado.');
         }
 
-        // Comparamos el input de oldPassword con la password actual del usuario
+        //Comparamos el input de oldPassword con la password actual del usuario
         const isPasswordValid = await bcrypt.compare(oldPassword, user.hashedPassword);
 
-        // Manejamos el error de ingresar una password incorrecta
+        //Manejamos el error de ingresar una password incorrecta
         if (!isPasswordValid) {
             throw new UnauthorizedException('La contraseña previa ingresada es incorrecta.');
         }
 
-        // Hasheamos la nueva password
+        //Hasheamos la nueva password
         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-        // Actualizamos el valor de hashedPassword con la nueva hashedNewPassword
+        //Actualizamos el valor de hashedPassword con la nueva hashedNewPassword
         await this.prisma.user.update({
             where: { id: userId },
             data: {
@@ -92,20 +92,20 @@ export class UsersService {
         return { message: 'Contraseña actualizada correctamente, Por seguridad, debe iniciar sesión de nuevo.' };
     }
 
-    // ---Subir una imagen de perfil---
+    //---Subir una imagen de perfil---
     async uploadAvatar(userId: string, file: Express.Multer.File) {
         if (!file) throw new BadRequestException('No se ha proporcionado ninguna imagen.');
 
-        // Redimensionamos a 400x400 la imagen
+        //Redimensionamos a 400x400 la imagen
         const optimizedBuffer = await sharp(file.buffer)
             .resize(400, 400, { fit: 'cover' })
             .webp({ quality: 100 })
             .toBuffer();
 
-        // Como usamos el user id para el titulo, sobreescribe la imagen anterior para no ocupar espacio de mas
+        //Como usamos el user id para el titulo, sobreescribe la imagen anterior para no ocupar espacio de mas
         const fileName = `${userId}.webp`;
 
-        // Subir optimizacion al storage
+        //Subir optimizacion al storage
         const { error } = await this.supabase.storage
             .from('avatars')
             .upload(fileName, optimizedBuffer, {
@@ -115,12 +115,12 @@ export class UsersService {
 
         if (error) throw new BadRequestException('Error al subir a Supabase: ' + error.message);
 
-        // Obtener la url generada
+        //Obtener la url generada
         const { data: { publicUrl } } = this.supabase.storage
             .from('avatars')
             .getPublicUrl(fileName);
 
-        // Guardar la URL en la tabla User de Prisma y agregar un timestamp al final para evitar qeu se muestre la foto vieja
+        //Guardar la URL en la tabla User de Prisma y agregar un timestamp al final para evitar qeu se muestre la foto vieja
         return await this.prisma.user.update({
             where: { id: userId },
             data: { avatarUrl: `${publicUrl}?t=${Date.now()}` },
@@ -128,7 +128,7 @@ export class UsersService {
         });
     }
 
-    // ---Obtener todos los usuarios (Solo ADMIN)---
+    //---Obtener todos los usuarios (Solo ADMIN)---
     async findAllUsers() {
         return this.prisma.user.findMany({
             select: {
@@ -143,7 +143,7 @@ export class UsersService {
         });
     }
 
-    // ---Editar nombre y ROL de cualquier usuario (Solo ADMIN)---
+    //---Editar nombre y ROL de cualquier usuario (Solo ADMIN)---
     async updateUserByAdmin(id: string, updateDto: UpdateUserByAdminDto) {
 
         const userExists = await this.prisma.user.findUnique({

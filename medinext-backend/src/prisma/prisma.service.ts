@@ -3,12 +3,12 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
-    // Se conecta apenas arranca la app
+    //Se conecta apenas arranca la app
     async onModuleInit() {
         await this.$connect();
     }
 
-    // Se desconecta prolijamente cuando apagas la app
+    //Se desconecta prolijamente cuando se apaga la app
     async onModuleDestroy() {
         await this.$disconnect();
     }
