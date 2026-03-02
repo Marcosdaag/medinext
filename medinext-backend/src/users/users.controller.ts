@@ -1,4 +1,5 @@
-import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Patch, Post, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, Param, ParseFilePipe, Patch, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
@@ -20,22 +21,25 @@ export class UsersController {
   //---Mostrar datos del usuario---
   @Get('profile')
   @ApiOperation({ summary: 'Obtener mi perfil de usuario' })
-  getProfile(@Request() req) {
-    return this.usersService.findOne(req.user.userId);
+  getProfile(@CurrentUser('userId') userId: string) {
+    return this.usersService.findOne(userId);
   }
 
   //---Actualizar datos obligatorios del user---
   @Patch('profile')
   @ApiOperation({ summary: 'Actualizar datos' })
-  updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.updateProfile(req.user.userId, updateUserDto);
+  updateProfile(@CurrentUser('userId') userId: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateProfile(userId, updateUserDto);
   }
 
   //---Cambiar password---
   @Patch('change-password')
   @ApiOperation({ summary: 'Cambiar la contraseña del usuario logueado' })
-  changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
-    return this.usersService.changePassword(req.user.userId, changePasswordDto);
+  changePassword(
+    @CurrentUser('userId') userId: string,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return this.usersService.changePassword(userId, changePasswordDto);
   }
 
   //---Actualizar foto de perfil---
@@ -52,7 +56,7 @@ export class UsersController {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
-    @Request() req,
+    @CurrentUser('userId') userId: string,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -62,7 +66,7 @@ export class UsersController {
       }),
     ) file: Express.Multer.File,
   ) {
-    return this.usersService.uploadAvatar(req.user.userId, file);
+    return this.usersService.uploadAvatar(userId, file);
   }
 
   //---Obtener listado de todos los users (ADMIN)---

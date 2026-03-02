@@ -9,6 +9,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
+    // selector base compartido en varios queries
+    private readonly baseUserSelect = {
+        id: true,
+        email: true,
+        fullName: true,
+        dni: true,
+        roles: true,
+        avatarUrl: true,
+        timeZone: true,
+    } as const;
 
     //Instancio la clase de supabase.
     private supabase;
@@ -26,15 +36,7 @@ export class UsersService {
     async findOne(id: string) {
         return this.prisma.user.findUnique({
             where: { id },
-            select: {
-                id: true,
-                email: true,
-                fullName: true,
-                dni: true,
-                roles: true,
-                avatarUrl: true,
-                timeZone: true,
-            }
+            select: this.baseUserSelect,
         });
     }
 
@@ -132,12 +134,7 @@ export class UsersService {
     async findAllUsers() {
         return this.prisma.user.findMany({
             select: {
-                id: true,
-                email: true,
-                fullName: true,
-                dni: true,
-                roles: true,
-                avatarUrl: true,
+                ...this.baseUserSelect,
                 createdAt: true,
             }
         });

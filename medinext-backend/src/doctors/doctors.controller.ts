@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 import { DoctorsService } from './doctors.service';
 import { CreateDoctorDto } from './dto/create-doctor.dto';
 import { UpdateDoctorDto } from './dto/update-doctor.dto';
@@ -20,35 +21,47 @@ export class DoctorsController {
   //---Endpoint para completar el perfil inicial---
   @Post('profile')
   @ApiOperation({ summary: 'Completar la especialidad al ascender a doctor' })
-  create(@Request() req, @Body() dto: CreateDoctorDto) {
-    return this.doctorsService.createProfile(req.user.userId, dto);
+  create(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: CreateDoctorDto,
+  ) {
+    return this.doctorsService.createProfile(userId, dto);
   }
 
   //---Endpoint para ver informacion completa---
   @Get('me')
   @ApiOperation({ summary: 'Ver perfil completo del doctor' })
-  getMe(@Request() req) {
-    return this.doctorsService.getMyProfile(req.user.userId);
+  getMe(@CurrentUser('userId') userId: string) {
+    return this.doctorsService.getMyProfile(userId);
   }
 
   //---Endpoint para cambiar precio y duracion de los turnos---
   @Patch('config')
   @ApiOperation({ summary: 'Edicion de precio y duracion de los turnos' })
-  updateConfig(@Request() req, @Body() dto: UpdateDoctorDto) {
-    return this.doctorsService.updateConfig(req.user.userId, dto);
+  updateConfig(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: UpdateDoctorDto,
+  ) {
+    return this.doctorsService.updateConfig(userId, dto);
   }
 
   //---Endpoint para agregar disponibilidad horaria---
   @Post('availability')
   @ApiOperation({ summary: 'Agregar disponibilidad horaria' })
-  addAvailability(@Request() req, @Body() dto: CreateAvailabilityDto) {
-    return this.doctorsService.addAvailability(req.user.userId, dto);
+  addAvailability(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: CreateAvailabilityDto,
+  ) {
+    return this.doctorsService.addAvailability(userId, dto);
   }
 
   //---Endpoint para bloquear dias (vacaciones)---
   @Post('override')
   @ApiOperation({ summary: 'Adicionar dias no laborales' })
-  addOverride(@Request() req, @Body() dto: CreateOverrideDto) {
-    return this.doctorsService.addOverride(req.user.userId, dto);
+  addOverride(
+    @CurrentUser('userId') userId: string,
+    @Body() dto: CreateOverrideDto,
+  ) {
+    return this.doctorsService.addOverride(userId, dto);
   }
 }

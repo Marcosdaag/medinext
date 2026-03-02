@@ -10,6 +10,12 @@ export class DoctorsService {
 
   constructor(private prisma: PrismaService) { }
 
+  private async ensureProfile(userId: string) {
+    const profile = await this.prisma.doctorProfile.findUnique({ where: { userId } });
+    if (!profile) throw new NotFoundException('Perfil médico no encontrado.');
+    return profile;
+  }
+
   //---Metodo para completar datos al tener el rango de DOCTOR---
   async createProfile(userId: string, dto: CreateDoctorDto) {
     const existing = await this.prisma.doctorProfile.findUnique({ where: { userId } });
@@ -27,21 +33,18 @@ export class DoctorsService {
 
   //---Buscar perfil con horarios y exepciones---
   async getMyProfile(userId: string) {
-    const profile = await this.prisma.doctorProfile.findUnique({
+    return this.prisma.doctorProfile.findUnique({
       where: { userId },
       include: {
         availabilities: true,
         overrides: true,
       }
     });
-    return profile;
   }
 
   //---Actualizar precio y tiempo de consulta---
   async updateConfig(userId: string, dto: UpdateDoctorDto) {
-    // Primero verificamos que exista el perfil
-    const profile = await this.prisma.doctorProfile.findUnique({ where: { userId } });
-    if (!profile) throw new NotFoundException('Primero debés crear tu perfil médico.');
+    await this.ensureProfile(userId); // lanza NotFound si no existe
 
     return this.prisma.doctorProfile.update({
       where: { userId },
@@ -54,8 +57,7 @@ export class DoctorsService {
 
   //---Agregar disponibilidad---
   async addAvailability(userId: string, dto: CreateAvailabilityDto) {
-    const profile = await this.prisma.doctorProfile.findUnique({ where: { userId } });
-    if (!profile) throw new NotFoundException('Perfil médico no encontrado.');
+    const profile = await this.ensureProfile(userId);
 
     if (dto.startTime >= dto.endTime) {
       throw new BadRequestException('La hora de fin debe ser mayor a la de inicio.');
@@ -73,8 +75,7 @@ export class DoctorsService {
 
   //---Agregar vacaciones---
   async addOverride(userId: string, dto: CreateOverrideDto) {
-    const profile = await this.prisma.doctorProfile.findUnique({ where: { userId } });
-    if (!profile) throw new NotFoundException('Perfil médico no encontrado.');
+    const profile = await this.ensureProfile(userId);
 
     return this.prisma.scheduleOverride.create({
       data: {
