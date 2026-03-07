@@ -1,3 +1,6 @@
 --Refactor y comentarios del modulo de doctores
 --Entender como se asignan los horarios de los turnos
 --Modulo de turnos
+--Modulo de pagos
+--Modulo de notificaciones
+--Modulo de chatbot
